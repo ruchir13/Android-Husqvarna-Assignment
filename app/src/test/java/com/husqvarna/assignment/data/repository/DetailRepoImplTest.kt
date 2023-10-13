@@ -23,7 +23,7 @@ class DetailRepoImplTest {
         MovieDetail(
             original_title = "Fake Title 1",
             overview = "This is overview of Fake movie - 1",
-            genres = listOf(Genres("1","Crime"), Genres("2","Thriller")),
+            genres = listOf(Genres("1", "Crime"), Genres("2", "Thriller")),
             release_date = "2023-10-12",
             poster_path = "/poster_path_1",
             vote_count = 100,
@@ -48,10 +48,11 @@ class DetailRepoImplTest {
         // Act
         val result = detailRepo.getMovieDetails("23").toList()
 
+
         // Assert
         assert(result[0] is Resource.Loading)
         assert(result[1] is Resource.Success)
-        assert((result[1] as Resource.Success).data?.vote_count==100)
+        assert((result[1] as Resource.Success).data?.vote_count == 100)
     }
 
     @Test
