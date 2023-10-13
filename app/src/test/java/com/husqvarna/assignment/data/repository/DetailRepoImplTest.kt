@@ -13,6 +13,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
+import retrofit2.HttpException
 import retrofit2.Response
 
 class DetailRepoImplTest {
@@ -46,13 +47,12 @@ class DetailRepoImplTest {
         Mockito.`when`(apiService.getMovieDetails("123")).thenReturn(mockResponse)
 
         // Act
-        val result = detailRepo.getMovieDetails("23").toList()
-
-
+        val result = detailRepo.getMovieDetails("123").toList()
         // Assert
+        assert(result.size == 2) // Expect a loading state and a success state
         assert(result[0] is Resource.Loading)
         assert(result[1] is Resource.Success)
-        assert((result[1] as Resource.Success).data?.vote_count == 100)
+        assert((result[1] as Resource.Success).data == fakeMovieDetail)
     }
 
     @Test
@@ -61,10 +61,20 @@ class DetailRepoImplTest {
         val errorResponse: Response<MovieDetail> =
             Response.error(404, ResponseBody.create(null, ""))
         launch {
-            Mockito.`when`(apiService.getMovieDetails("123")).thenReturn(errorResponse.body())
+            Mockito.`when`(apiService.getMovieDetails("123"))
+                .thenThrow(
+                    HttpException(
+                        Response.error<HttpException>(
+                            404,
+                            ResponseBody.create(null, "Not Found")
+                        )
+                    )
+                )
             // Act
-            val result = detailRepo.getMovieDetails("123")
+            val result = detailRepo.getMovieDetails("123").toList()
             // Assert
+            assert(result[0] is Resource.Loading)
+            assert(result[1] is Resource.Error)
         }
     }
 }

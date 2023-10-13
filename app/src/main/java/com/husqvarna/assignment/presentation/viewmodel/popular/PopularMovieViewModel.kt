@@ -23,7 +23,7 @@ class PopularMovieViewModel @Inject constructor(private val getPopularMovies: Ge
         getMovies()
     }
 
-    private fun getMovies() {
+    fun getMovies() {
         viewModelScope.launch {
             getPopularMovies().onEach { it ->
                 when (it) {
